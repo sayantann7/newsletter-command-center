@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const api = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: "https://newsletter-backend-eight.vercel.app",
 });
 
 export const login = async (username: string, password: string) => {
