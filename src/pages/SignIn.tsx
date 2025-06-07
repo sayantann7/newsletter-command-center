@@ -7,18 +7,21 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Mail, Lock, Eye, EyeOff, Terminal } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from "react-router-dom";
+import { login } from "@/lib/utils";
 
 const SignIn = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email.trim() || !password.trim()) {
+    if (!username.trim() || !password.trim()) {
       toast({
         title: "ACCESS DENIED",
         description: "All credentials are required to proceed.",
@@ -28,17 +31,22 @@ const SignIn = () => {
     }
 
     setIsLoading(true);
-    
-    // Simulate authentication
-    setTimeout(() => {
+
+    try {
+      const userId = await login(username, password);
+      localStorage.setItem("userId", userId);
+      navigate("/");
+    } catch (error) {
+      console.error("Error logging in:", error);
+      alert("Login failed. Please check your credentials.");
+    } finally {
       setIsLoading(false);
       toast({
         title: "ACCESS GRANTED",
         description: "Welcome to the Protocol Network.",
       });
-      // In a real app, this would redirect to dashboard
-      window.location.href = '/';
-    }, 2000);
+    }
+
   };
 
   return (
@@ -77,14 +85,14 @@ const SignIn = () => {
           <CardContent>
             <form onSubmit={handleSignIn} className="space-y-6">
               <div className="space-y-2">
-                <label className="text-sm font-mono text-muted-foreground">EMAIL ADDRESS</label>
+                <label className="text-sm font-mono text-muted-foreground">USERNAME</label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="user@tomorrowprotocol.io"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Enter your username..."
                     className="font-mono bg-input border-border focus:border-neon-orange transition-colors pl-10"
                     required
                   />

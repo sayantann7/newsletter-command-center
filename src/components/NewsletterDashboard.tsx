@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -9,13 +9,37 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Send, Eye, Users, Mail, LogOut } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { getTotalEmailsSent, getTotalSubscribers, sendEmail } from '@/lib/utils';
 
 const NewsletterDashboard = () => {
   const [subject, setSubject] = useState('');
   const [content, setContent] = useState('');
   const [isPreview, setIsPreview] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [totalSubscribers, setTotalSubscribers] = useState(0);
+  const [totalEmailsSent, setTotalEmailsSent] = useState(0);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const subscribers = await getTotalSubscribers();
+        setTotalSubscribers(subscribers);
+
+        const emailsSent = await getTotalEmailsSent();
+        setTotalEmailsSent(emailsSent);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast({
+          title: "DATA FETCH ERROR",
+          description: "Unable to retrieve subscriber or email data.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleSend = async () => {
     if (!subject.trim() || !content.trim()) {
@@ -28,17 +52,29 @@ const NewsletterDashboard = () => {
     }
 
     setIsSending(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsSending(false);
+
+    try {
+      await sendEmail(subject, content);
       toast({
         title: "TRANSMISSION SUCCESSFUL",
         description: "Newsletter deployed to all active subscribers.",
       });
       setSubject('');
       setContent('');
-    }, 2000);
+    } catch (error) {
+      console.error("Error sending email:", error);
+      toast({
+        title: "TRANSMISSION FAILED",
+        description: "There was an error sending the newsletter.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSending(false);
+      toast({
+        title: "TRANSMISSION SUCCESSFUL",
+        description: "Newsletter deployed to all active subscribers.",
+      });
+    }
   };
 
   const handleLogout = () => {
@@ -47,15 +83,11 @@ const NewsletterDashboard = () => {
       description: "Logging out of the system...",
     });
     // Simulate logout - in a real app this would redirect to sign-in
-    setTimeout(() => {
-      window.location.href = '/signin';
-    }, 1000);
-  };
+    
+    localStorage.removeItem("userId");
 
-  const stats = [
-    { label: 'Active Subscribers', value: '25,847', icon: Users, color: 'text-terminal-green' },
-    { label: 'Sent This Month', value: '12', icon: Mail, color: 'text-neon-orange' },
-  ];
+    window.location.href = '/signin';
+  };
 
   return (
     <div className="min-h-screen bg-darker-bg p-6">
@@ -71,11 +103,8 @@ const NewsletterDashboard = () => {
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <Badge variant="outline" className="border-terminal-green text-terminal-green">
-              ONLINE
-            </Badge>
             <Badge variant="outline" className="border-neon-orange text-neon-orange animate-glow-pulse">
-              ACTIVE
+              ONLINE
             </Badge>
             <Button 
               variant="outline" 
@@ -90,19 +119,28 @@ const NewsletterDashboard = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {stats.map((stat, index) => (
-            <Card key={index} className="cyber-border bg-card hover:bg-card/80 transition-colors">
+          <Card className="cyber-border bg-card hover:bg-card/80 transition-colors">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground font-mono">{stat.label}</p>
-                    <p className={`text-2xl font-bold font-mono ${stat.color}`}>{stat.value}</p>
+                    <p className="text-sm text-muted-foreground font-mono">Active Subscribers</p>
+                    <p className={`text-2xl font-bold font-mono text-terminal-green`}>{totalSubscribers}</p>
                   </div>
-                  <stat.icon className={`h-8 w-8 ${stat.color}`} />
+                  <Users className={`h-8 w-8 text-terminal-green`} />
                 </div>
               </CardContent>
             </Card>
-          ))}
+            <Card className="cyber-border bg-card hover:bg-card/80 transition-colors">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground font-mono">Sent This Month</p>
+                    <p className={`text-2xl font-bold font-mono text-neon-orange`}>{totalEmailsSent}</p>
+                  </div>
+                  <Mail className={`h-8 w-8 text-neon-orange`} />
+                </div>
+              </CardContent>
+            </Card>
         </div>
 
         {/* Main Content */}
@@ -154,14 +192,6 @@ const NewsletterDashboard = () => {
                   </div>
                   
                   <div className="flex gap-3">
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsPreview(true)}
-                      className="font-mono border-muted hover:border-neon-orange transition-colors"
-                    >
-                      <Eye className="h-4 w-4 mr-2" />
-                      PREVIEW
-                    </Button>
                     <Button
                       onClick={handleSend}
                       disabled={isSending || !subject.trim() || !content.trim()}
@@ -220,11 +250,6 @@ const NewsletterDashboard = () => {
                   
                   {/* Top separator */}
                   <div style={{ height: '2px', backgroundColor: '#b8460e', margin: '30px 0' }}></div>
-                  
-                  {/* Subject */}
-                  <div style={{ fontSize: '16px', color: '#b8460e', fontWeight: 'bold', marginBottom: '20px' }}>
-                    {subject || '[NO SUBJECT]'}
-                  </div>
                   
                   {/* Content */}
                   <div style={{ fontSize: '16px', color: '#b8460e', fontWeight: 'bold' }}>
