@@ -185,144 +185,86 @@ const NewsletterDashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {/* Enhanced Email Preview Container */}
-                <div className="relative">
-                  {/* Preview Frame with Enhanced Styling */}
-                  <div className="bg-gradient-to-br from-gray-100 to-gray-200 p-8 rounded-lg shadow-2xl border-4 border-gray-300 relative overflow-hidden">
-                    {/* Decorative Elements */}
-                    <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-neon-orange via-terminal-green to-neon-orange opacity-50"></div>
-                    <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-neon-orange via-terminal-green to-neon-orange opacity-50"></div>
-                    
-                    {/* Email Content with exact styling from template */}
+                {/* Email Preview with exact styling from the template */}
+                <div style={{ 
+                  maxWidth: '600px', 
+                  margin: '0 auto', 
+                  padding: '40px', 
+                  backgroundColor: '#ffffff',
+                  fontFamily: "'Courier New', monospace",
+                  color: '#b8460e',
+                  lineHeight: '1.6'
+                }}>
+                  {/* Header */}
+                  <div style={{ marginBottom: '30px' }}>
                     <div style={{ 
-                      maxWidth: '600px', 
-                      margin: '0 auto', 
-                      padding: '40px', 
-                      backgroundColor: '#ffffff',
-                      fontFamily: "'Courier New', monospace",
-                      color: '#b8460e',
-                      lineHeight: '1.6',
-                      borderRadius: '8px',
-                      boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
-                      border: '2px solid #e5e5e5'
+                      fontSize: '72px', 
+                      fontWeight: '900', 
+                      color: '#b8460e', 
+                      marginBottom: '5px', 
+                      letterSpacing: '2px' 
                     }}>
-                      {/* Header */}
-                      <div style={{ marginBottom: '30px' }}>
-                        <div style={{ 
-                          fontSize: '72px', 
-                          fontWeight: '900', 
-                          color: '#b8460e', 
-                          marginBottom: '5px', 
-                          letterSpacing: '2px',
-                          textShadow: '0 2px 4px rgba(184, 70, 14, 0.3)'
-                        }}>
-                          T.P<span style={{ color: '#b8460e' }}>*</span>
-                        </div>
-                        <div style={{ 
-                          fontSize: '18px', 
-                          fontWeight: 'bold', 
-                          color: '#b8460e', 
-                          textTransform: 'uppercase', 
-                          letterSpacing: '3px', 
-                          marginBottom: '30px',
-                          opacity: '0.8'
-                        }}>
-                          TERMINAL | PROTOCOL
-                        </div>
-                      </div>
-                      
-                      {/* Top separator with enhanced styling */}
-                      <div style={{ 
-                        height: '3px', 
-                        background: 'linear-gradient(90deg, #b8460e, #d4621a, #b8460e)', 
-                        margin: '30px 0',
-                        borderRadius: '2px',
-                        boxShadow: '0 1px 3px rgba(184, 70, 14, 0.3)'
-                      }}></div>
-                      
-                      {/* Subject */}
-                      <div style={{ 
-                        fontSize: '18px', 
-                        color: '#b8460e', 
-                        fontWeight: 'bold', 
-                        marginBottom: '25px',
-                        padding: '15px',
-                        backgroundColor: '#fef9f6',
-                        borderLeft: '4px solid #b8460e',
-                        borderRadius: '4px'
-                      }}>
-                        {subject || '[SUBJECT PREVIEW - Enter subject in compose tab]'}
-                      </div>
-                      
-                      {/* Content */}
-                      <div style={{ fontSize: '16px', color: '#b8460e', fontWeight: 'bold' }}>
-                        {content ? (
-                          content.split('\n').map((line, index) => (
-                            <div key={index} style={{ 
-                              marginBottom: '20px',
-                              padding: '10px 0',
-                              borderBottom: line.trim() ? 'none' : '1px dotted #d4621a'
-                            }}>
-                              {line || '\u00A0'}
-                            </div>
-                          ))
-                        ) : (
-                          <div style={{ 
-                            fontStyle: 'italic', 
-                            color: '#d4621a',
-                            textAlign: 'center',
-                            padding: '40px 20px',
-                            backgroundColor: '#fef9f6',
-                            borderRadius: '8px',
-                            border: '2px dashed #d4621a'
-                          }}>
-                            [CONTENT PREVIEW - Enter your message in the compose tab to see it here]
-                          </div>
-                        )}
-                      </div>
-                      
-                      {/* Signature with enhanced styling */}
-                      <div style={{ 
-                        marginTop: '40px', 
-                        fontWeight: 'bold', 
-                        fontSize: '16px', 
-                        color: '#b8460e',
-                        textAlign: 'right',
-                        fontStyle: 'italic'
-                      }}>
-                        — tensor boy
-                      </div>
-                      
-                      {/* Bottom separator with enhanced styling */}
-                      <div style={{ 
-                        height: '3px', 
-                        background: 'linear-gradient(90deg, #b8460e, #d4621a, #b8460e)', 
-                        margin: '30px 0',
-                        borderRadius: '2px',
-                        boxShadow: '0 1px 3px rgba(184, 70, 14, 0.3)'
-                      }}></div>
-                      
-                      {/* Footer message with enhanced styling */}
-                      <div style={{ marginTop: '50px', textAlign: 'left' }}>
-                        <div style={{ 
-                          fontSize: '23px', 
-                          fontWeight: 'bold', 
-                          color: '#b8460e', 
-                          lineHeight: '1.4',
-                          textShadow: '0 1px 2px rgba(184, 70, 14, 0.2)'
-                        }}>
-                          Hack the system.<br />
-                          Or be hacked by it.
-                        </div>
-                      </div>
+                      T.P<span style={{ color: '#b8460e' }}>*</span>
+                    </div>
+                    <div style={{ 
+                      fontSize: '18px', 
+                      fontWeight: 'bold', 
+                      color: '#b8460e', 
+                      textTransform: 'uppercase', 
+                      letterSpacing: '3px', 
+                      marginBottom: '30px' 
+                    }}>
+                      TERMINAL | PROTOCOL
                     </div>
                   </div>
                   
-                  {/* Preview Status Indicator */}
-                  <div className="absolute top-4 right-4">
-                    <Badge variant="outline" className="bg-background/80 backdrop-blur-sm border-neon-orange text-neon-orange">
-                      LIVE PREVIEW
-                    </Badge>
+                  {/* Top separator */}
+                  <div style={{ height: '2px', backgroundColor: '#b8460e', margin: '30px 0' }}></div>
+                  
+                  {/* Subject */}
+                  <div style={{ fontSize: '16px', color: '#b8460e', fontWeight: 'bold', marginBottom: '20px' }}>
+                    {subject || '[NO SUBJECT]'}
+                  </div>
+                  
+                  {/* Content */}
+                  <div style={{ fontSize: '16px', color: '#b8460e', fontWeight: 'bold' }}>
+                    {content ? (
+                      content.split('\n').map((line, index) => (
+                        <div key={index} style={{ marginBottom: '20px' }}>
+                          {line || '\u00A0'}
+                        </div>
+                      ))
+                    ) : (
+                      <div style={{ fontStyle: 'italic', color: '#b8460e' }}>
+                        [CONTENT PREVIEW WILL APPEAR HERE]
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Signature */}
+                  <div style={{ 
+                    marginTop: '40px', 
+                    fontWeight: 'bold', 
+                    fontSize: '16px', 
+                    color: '#b8460e' 
+                  }}>
+                    — tensor boy
+                  </div>
+                  
+                  {/* Bottom separator */}
+                  <div style={{ height: '2px', backgroundColor: '#b8460e', margin: '30px 0' }}></div>
+                  
+                  {/* Footer message */}
+                  <div style={{ marginTop: '50px', textAlign: 'left' }}>
+                    <div style={{ 
+                      fontSize: '23px', 
+                      fontWeight: 'bold', 
+                      color: '#b8460e', 
+                      lineHeight: '1.4' 
+                    }}>
+                      Hack the system.<br />
+                      Or be hacked by it.
+                    </div>
                   </div>
                 </div>
               </CardContent>
