@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Send, Eye, Users, Activity, Mail, Calendar } from 'lucide-react';
+import { Send, Eye, Users, Mail, LogOut } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const NewsletterDashboard = () => {
@@ -41,11 +41,20 @@ const NewsletterDashboard = () => {
     }, 2000);
   };
 
+  const handleLogout = () => {
+    toast({
+      title: "SESSION TERMINATED",
+      description: "Logging out of the system...",
+    });
+    // Simulate logout - in a real app this would redirect to sign-in
+    setTimeout(() => {
+      window.location.href = '/signin';
+    }, 1000);
+  };
+
   const stats = [
     { label: 'Active Subscribers', value: '25,847', icon: Users, color: 'text-terminal-green' },
     { label: 'Sent This Month', value: '12', icon: Mail, color: 'text-neon-orange' },
-    { label: 'Open Rate', value: '78.3%', icon: Activity, color: 'text-terminal-green' },
-    { label: 'Next Scheduled', value: 'Manual', icon: Calendar, color: 'text-muted-foreground' },
   ];
 
   return (
@@ -68,11 +77,19 @@ const NewsletterDashboard = () => {
             <Badge variant="outline" className="border-neon-orange text-neon-orange animate-glow-pulse">
               ACTIVE
             </Badge>
+            <Button 
+              variant="outline" 
+              onClick={handleLogout}
+              className="font-mono border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              LOGOUT
+            </Button>
           </div>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {stats.map((stat, index) => (
             <Card key={index} className="cyber-border bg-card hover:bg-card/80 transition-colors">
               <CardContent className="p-4">
