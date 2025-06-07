@@ -185,36 +185,85 @@ const NewsletterDashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="border border-border rounded-md p-6 bg-background">
-                  <div className="space-y-4">
-                    <div className="border-b border-border pb-4">
-                      <h3 className="text-lg font-bold font-cyber text-foreground">
-                        {subject || '[NO SUBJECT]'}
-                      </h3>
-                      <p className="text-sm text-muted-foreground font-mono">
-                        From: Tomorrow Protocol &lt;noreply@tomorrowprotocol.io&gt;
-                      </p>
+                {/* Email Preview with exact styling from the template */}
+                <div style={{ 
+                  maxWidth: '600px', 
+                  margin: '0 auto', 
+                  padding: '40px', 
+                  backgroundColor: '#ffffff',
+                  fontFamily: "'Courier New', monospace",
+                  color: '#b8460e',
+                  lineHeight: '1.6'
+                }}>
+                  {/* Header */}
+                  <div style={{ marginBottom: '30px' }}>
+                    <div style={{ 
+                      fontSize: '72px', 
+                      fontWeight: '900', 
+                      color: '#b8460e', 
+                      marginBottom: '5px', 
+                      letterSpacing: '2px' 
+                    }}>
+                      T.P<span style={{ color: '#b8460e' }}>*</span>
                     </div>
-                    
-                    <div className="space-y-3">
-                      {content ? (
-                        content.split('\n').map((line, index) => (
-                          <p key={index} className="font-mono text-foreground leading-relaxed">
-                            {line || '\u00A0'}
-                          </p>
-                        ))
-                      ) : (
-                        <p className="text-muted-foreground font-mono italic">
-                          [CONTENT PREVIEW WILL APPEAR HERE]
-                        </p>
-                      )}
+                    <div style={{ 
+                      fontSize: '18px', 
+                      fontWeight: 'bold', 
+                      color: '#b8460e', 
+                      textTransform: 'uppercase', 
+                      letterSpacing: '3px', 
+                      marginBottom: '30px' 
+                    }}>
+                      TERMINAL | PROTOCOL
                     </div>
-                    
-                    <Separator className="bg-border" />
-                    
-                    <div className="text-xs text-muted-foreground font-mono">
-                      <p>© 2025 Tomorrow Protocol. All rights reserved.</p>
-                      <p>You received this because you're subscribed to our updates.</p>
+                  </div>
+                  
+                  {/* Top separator */}
+                  <div style={{ height: '2px', backgroundColor: '#b8460e', margin: '30px 0' }}></div>
+                  
+                  {/* Subject */}
+                  <div style={{ fontSize: '16px', color: '#b8460e', fontWeight: 'bold', marginBottom: '20px' }}>
+                    {subject || '[NO SUBJECT]'}
+                  </div>
+                  
+                  {/* Content */}
+                  <div style={{ fontSize: '16px', color: '#b8460e', fontWeight: 'bold' }}>
+                    {content ? (
+                      content.split('\n').map((line, index) => (
+                        <div key={index} style={{ marginBottom: '20px' }}>
+                          {line || '\u00A0'}
+                        </div>
+                      ))
+                    ) : (
+                      <div style={{ fontStyle: 'italic', color: '#b8460e' }}>
+                        [CONTENT PREVIEW WILL APPEAR HERE]
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Signature */}
+                  <div style={{ 
+                    marginTop: '40px', 
+                    fontWeight: 'bold', 
+                    fontSize: '16px', 
+                    color: '#b8460e' 
+                  }}>
+                    — tensor boy
+                  </div>
+                  
+                  {/* Bottom separator */}
+                  <div style={{ height: '2px', backgroundColor: '#b8460e', margin: '30px 0' }}></div>
+                  
+                  {/* Footer message */}
+                  <div style={{ marginTop: '50px', textAlign: 'left' }}>
+                    <div style={{ 
+                      fontSize: '23px', 
+                      fontWeight: 'bold', 
+                      color: '#b8460e', 
+                      lineHeight: '1.4' 
+                    }}>
+                      Hack the system.<br />
+                      Or be hacked by it.
                     </div>
                   </div>
                 </div>
