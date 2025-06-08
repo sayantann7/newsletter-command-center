@@ -248,42 +248,43 @@ const NewsletterDashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {/* Email Preview with Terminal Protocol styling */}
+                {/* Email Preview with lighter Terminal Protocol styling */}
                 <div style={{ 
                   maxWidth: '600px', 
                   margin: '0 auto', 
-                  fontFamily: "'Courier New', monospace",
-                  backgroundColor: '#0d0d0f',
-                  color: '#b8460e',
+                  fontFamily: "'JetBrains Mono', 'Courier New', monospace",
+                  backgroundColor: '#f8f9fa',
+                  color: '#2d3748',
                   lineHeight: '1.6',
                   padding: '0',
-                  borderRadius: '8px',
-                  border: '1px solid #b8460e',
-                  overflow: 'hidden'
+                  borderRadius: '12px',
+                  border: '2px solid #e2e8f0',
+                  overflow: 'hidden',
+                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)'
                 }}>
                   
                   {/* Header */}
                   <div style={{ 
                     textAlign: 'center', 
-                    padding: '30px 20px', 
-                    borderBottom: '2px solid #b8460e',
-                    background: 'linear-gradient(135deg, rgba(184, 70, 14, 0.1) 0%, rgba(184, 70, 14, 0.05) 100%)'
+                    padding: '40px 30px', 
+                    borderBottom: '2px solid #e2e8f0',
+                    background: 'linear-gradient(135deg, #fff 0%, #f7fafc 100%)'
                   }}>
                     <div style={{ 
-                      fontSize: '48px', 
+                      fontSize: '42px', 
                       fontWeight: '900', 
-                      marginBottom: '10px', 
-                      letterSpacing: '3px',
-                      textShadow: '0 0 10px rgba(184, 70, 14, 0.5)'
+                      marginBottom: '12px', 
+                      letterSpacing: '2px',
+                      color: '#2d3748'
                     }}>
-                      T.P<span style={{ color: '#b8460e' }}>*</span>
+                      T.P<span style={{ color: '#f56500' }}>*</span>
                     </div>
                     <div style={{ 
-                      fontSize: '14px', 
-                      fontWeight: 'bold', 
+                      fontSize: '13px', 
+                      fontWeight: '600', 
                       textTransform: 'uppercase', 
-                      letterSpacing: '4px',
-                      opacity: '0.8'
+                      letterSpacing: '3px',
+                      color: '#718096'
                     }}>
                       TERMINAL | PROTOCOL
                     </div>
@@ -291,22 +292,24 @@ const NewsletterDashboard = () => {
                   
                   {/* Subject Section */}
                   <div style={{ 
-                    padding: '30px 30px 20px 30px',
-                    borderBottom: '1px solid rgba(184, 70, 14, 0.3)'
+                    padding: '30px 30px 25px 30px',
+                    borderBottom: '1px solid #e2e8f0',
+                    backgroundColor: '#ffffff'
                   }}>
                     <div style={{ 
-                      fontSize: '20px', 
-                      fontWeight: 'bold', 
-                      marginBottom: '10px',
-                      textShadow: '0 0 5px rgba(184, 70, 14, 0.3)'
+                      fontSize: '18px', 
+                      fontWeight: '700', 
+                      marginBottom: '8px',
+                      color: '#2d3748'
                     }}>
                       › {subject || 'SYSTEM TRANSMISSION'}
                     </div>
                     <div style={{ 
-                      fontSize: '12px', 
-                      opacity: '0.7',
+                      fontSize: '11px', 
+                      color: '#a0aec0',
                       textTransform: 'uppercase',
-                      letterSpacing: '1px'
+                      letterSpacing: '1px',
+                      fontWeight: '500'
                     }}>
                       INCOMING MESSAGE
                     </div>
@@ -314,35 +317,37 @@ const NewsletterDashboard = () => {
                   
                   {/* Content Section */}
                   <div style={{ 
-                    padding: '30px',
-                    minHeight: '200px'
+                    padding: '35px 30px',
+                    minHeight: '200px',
+                    backgroundColor: '#ffffff'
                   }}>
                     <div style={{ 
-                      fontSize: '14px', 
+                      fontSize: '12px', 
                       marginBottom: '20px',
-                      fontWeight: 'bold',
+                      fontWeight: '600',
                       textTransform: 'uppercase',
                       letterSpacing: '1px',
-                      opacity: '0.8'
+                      color: '#718096'
                     }}>
                       MESSAGE CONTENT:
                     </div>
                     
                     <div style={{ 
                       fontSize: '14px', 
-                      lineHeight: '1.8',
+                      lineHeight: '1.7',
                       paddingLeft: '20px',
-                      borderLeft: '2px solid rgba(184, 70, 14, 0.3)',
-                      marginBottom: '30px'
+                      borderLeft: '3px solid #fed7aa',
+                      marginBottom: '30px',
+                      color: '#4a5568'
                     }}>
                       {content ? (
                         content.split('\n').map((line, index) => (
-                          <div key={index} style={{ marginBottom: '8px' }}>
+                          <div key={index} style={{ marginBottom: '10px' }}>
                             › {line || '\u00A0'}
                           </div>
                         ))
                       ) : (
-                        <div style={{ fontStyle: 'italic', opacity: '0.6' }}>
+                        <div style={{ fontStyle: 'italic', color: '#a0aec0' }}>
                           › Your transmission content will appear here...
                         </div>
                       )}
@@ -351,35 +356,36 @@ const NewsletterDashboard = () => {
                   
                   {/* Terminal Footer */}
                   <div style={{ 
-                    padding: '20px 30px',
-                    borderTop: '2px solid #b8460e',
-                    background: 'linear-gradient(135deg, rgba(184, 70, 14, 0.1) 0%, rgba(184, 70, 14, 0.05) 100%)',
+                    padding: '25px 30px',
+                    borderTop: '2px solid #e2e8f0',
+                    background: 'linear-gradient(135deg, #fff 0%, #f7fafc 100%)',
                     textAlign: 'center'
                   }}>
                     <div style={{ 
                       fontSize: '16px', 
-                      fontWeight: 'bold', 
+                      fontWeight: '700', 
                       marginBottom: '15px',
-                      textShadow: '0 0 5px rgba(184, 70, 14, 0.3)'
+                      color: '#2d3748'
                     }}>
                       — tensor boy
                     </div>
                     
                     <div style={{ 
-                      fontSize: '12px', 
-                      opacity: '0.7',
+                      fontSize: '11px', 
+                      color: '#a0aec0',
                       textTransform: 'uppercase',
                       letterSpacing: '2px',
-                      marginBottom: '20px'
+                      marginBottom: '20px',
+                      fontWeight: '500'
                     }}>
                       END TRANSMISSION
                     </div>
                     
                     <div style={{ 
-                      fontSize: '18px', 
-                      fontWeight: 'bold', 
-                      lineHeight: '1.4',
-                      textShadow: '0 0 8px rgba(184, 70, 14, 0.4)'
+                      fontSize: '16px', 
+                      fontWeight: '600', 
+                      lineHeight: '1.5',
+                      color: '#4a5568'
                     }}>
                       Hack the system.<br />
                       Or be hacked by it.
