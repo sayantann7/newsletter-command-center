@@ -7,13 +7,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Send, Eye, Users, Mail, LogOut } from 'lucide-react';
+import { Send, Eye, Users, Mail, LogOut, Code, Type, Image } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getTotalEmailsSent, getTotalSubscribers, sendEmail, sendTestEmail } from '@/lib/utils';
 
 const NewsletterDashboard = () => {
   const [subject, setSubject] = useState('');
   const [content, setContent] = useState('');
+  const [htmlContent, setHtmlContent] = useState('');
+  const [contentMode, setContentMode] = useState<'text' | 'html'>('text');
   const [isPreview, setIsPreview] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [totalSubscribers, setTotalSubscribers] = useState(0);
@@ -42,7 +44,8 @@ const NewsletterDashboard = () => {
   }, []);
 
   const handleTestSend = async () => {
-    if (!subject.trim() || !content.trim()) {
+    const emailContent = contentMode === 'html' ? htmlContent : content;
+    if (!subject.trim() || !emailContent.trim()) {
       toast({
         title: "ACCESS DENIED",
         description: "Subject and content are required to proceed.",
@@ -51,7 +54,7 @@ const NewsletterDashboard = () => {
       return;
     }
     try {
-      await sendTestEmail(subject, content);
+      await sendTestEmail(subject, emailContent);
       toast({
         title: "TEST TRANSMISSION SUCCESSFUL",
         description: "Test email sent successfully.",
@@ -67,7 +70,8 @@ const NewsletterDashboard = () => {
   }
 
   const handleSend = async () => {
-    if (!subject.trim() || !content.trim()) {
+    const emailContent = contentMode === 'html' ? htmlContent : content;
+    if (!subject.trim() || !emailContent.trim()) {
       toast({
         title: "ACCESS DENIED",
         description: "Subject and content are required to proceed.",
@@ -79,13 +83,14 @@ const NewsletterDashboard = () => {
     setIsSending(true);
 
     try {
-      await sendEmail(subject, content);
+      await sendEmail(subject, emailContent);
       toast({
         title: "TRANSMISSION SUCCESSFUL",
         description: "Newsletter deployed to all active subscribers.",
       });
       setSubject('');
       setContent('');
+      setHtmlContent('');
     } catch (error) {
       console.error("Error sending email:", error);
       toast({
@@ -112,6 +117,28 @@ const NewsletterDashboard = () => {
     localStorage.removeItem("userId");
 
     window.location.href = '/signin';
+  };
+
+  const insertImageTemplate = () => {
+    const imageTemplate = `<img src="https://your-image-url.com/image.jpg" alt="Description" style="width: 100%; max-width: 600px; height: auto; border-radius: 8px; margin: 20px 0;" />`;
+    setHtmlContent(prev => prev + '\n' + imageTemplate);
+  };
+
+  const insertSectionTemplate = () => {
+    const sectionTemplate = `
+<div style="margin: 20px 0; padding: 20px; background-color: #f8f9fa; border-radius: 8px; border-left: 4px solid #007bff;">
+  <h3 style="margin: 0 0 10px 0; color: #333; font-size: 18px;">Section Title</h3>
+  <p style="margin: 0; color: #666; line-height: 1.6;">Your content here...</p>
+</div>`;
+    setHtmlContent(prev => prev + '\n' + sectionTemplate);
+  };
+
+  const getCurrentContent = () => {
+    return contentMode === 'html' ? htmlContent : content;
+  };
+
+  const getCurrentContentLength = () => {
+    return getCurrentContent().length;
   };
 
   return (
@@ -194,14 +221,82 @@ const NewsletterDashboard = () => {
                   />
                 </div>
 
+                {/* Content Mode Toggle */}
+                <div className="flex items-center gap-4">
+                  <label className="text-sm font-mono text-muted-foreground">CONTENT MODE</label>
+                  <div className="flex gap-2">
+                    <Button
+                      variant={contentMode === 'text' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setContentMode('text')}
+                      className="font-mono"
+                    >
+                      <Type className="h-4 w-4 mr-2" />
+                      TEXT
+                    </Button>
+                    <Button
+                      variant={contentMode === 'html' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setContentMode('html')}
+                      className="font-mono"
+                    >
+                      <Code className="h-4 w-4 mr-2" />
+                      HTML
+                    </Button>
+                  </div>
+                </div>
+
+                {/* HTML Tools */}
+                {contentMode === 'html' && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-mono text-muted-foreground">QUICK TOOLS</label>
+                    <div className="flex gap-2 flex-wrap">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={insertImageTemplate}
+                        className="font-mono text-xs"
+                      >
+                        <Image className="h-3 w-3 mr-1" />
+                        ADD IMAGE
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={insertSectionTemplate}
+                        className="font-mono text-xs"
+                      >
+                        ADD SECTION
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
                 <div className="space-y-2">
-                  <label className="text-sm font-mono text-muted-foreground">MESSAGE CONTENT</label>
-                  <Textarea
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    placeholder="Compose your message for the network..."
-                    className="min-h-[300px] font-mono bg-input border-border focus:border-neon-orange transition-colors resize-none"
-                  />
+                  <label className="text-sm font-mono text-muted-foreground">
+                    {contentMode === 'html' ? 'HTML CONTENT' : 'MESSAGE CONTENT'}
+                  </label>
+                  {contentMode === 'text' ? (
+                    <Textarea
+                      value={content}
+                      onChange={(e) => setContent(e.target.value)}
+                      placeholder="Compose your message for the network..."
+                      className="min-h-[300px] font-mono bg-input border-border focus:border-neon-orange transition-colors resize-none"
+                    />
+                  ) : (
+                    <Textarea
+                      value={htmlContent}
+                      onChange={(e) => setHtmlContent(e.target.value)}
+                      placeholder={`Enter HTML content with inline styles:
+
+<div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+  <h2 style="color: #333; margin-bottom: 10px;">Your Title</h2>
+  <p style="color: #666; line-height: 1.6;">Your content...</p>
+  <img src="https://your-image-url.com" style="width: 100%; border-radius: 8px;" />
+</div>`}
+                      className="min-h-[400px] font-mono bg-input border-border focus:border-neon-orange transition-colors resize-none text-xs"
+                    />
+                  )}
                 </div>
 
                 <Separator className="bg-border" />
@@ -209,10 +304,13 @@ const NewsletterDashboard = () => {
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="font-mono">
-                      {content.length} CHARS
+                      {getCurrentContentLength()} CHARS
                     </Badge>
                     <Badge variant="outline" className="font-mono">
-                      {content.split('\n').length} LINES
+                      {getCurrentContent().split('\n').length} LINES
+                    </Badge>
+                    <Badge variant="outline" className="font-mono">
+                      {contentMode.toUpperCase()} MODE
                     </Badge>
                   </div>
                   
@@ -227,7 +325,7 @@ const NewsletterDashboard = () => {
                     </Button>
                     <Button
                       onClick={handleSend}
-                      disabled={isSending || !subject.trim() || !content.trim()}
+                      disabled={isSending || !subject.trim() || !getCurrentContent().trim()}
                       className="font-mono bg-neon-orange hover:bg-neon-orange/80 text-black transition-colors terminal-glow"
                     >
                       <Send className="h-4 w-4 mr-2" />
@@ -248,17 +346,17 @@ const NewsletterDashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {/* Email Preview with lighter Terminal Protocol styling */}
+                {/* Email Preview */}
                 <div style={{ 
                   maxWidth: '600px', 
                   margin: '0 auto', 
-                  fontFamily: "'JetBrains Mono', 'Courier New', monospace",
-                  backgroundColor: '#f8f9fa',
-                  color: '#2d3748',
+                  fontFamily: "'Segoe UI', Arial, sans-serif",
+                  backgroundColor: '#ffffff',
+                  color: '#333333',
                   lineHeight: '1.6',
                   padding: '0',
                   borderRadius: '12px',
-                  border: '2px solid #e2e8f0',
+                  border: '1px solid #e5e7eb',
                   overflow: 'hidden',
                   boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)'
                 }}>
@@ -266,126 +364,129 @@ const NewsletterDashboard = () => {
                   {/* Header */}
                   <div style={{ 
                     textAlign: 'center', 
-                    padding: '40px 30px', 
-                    borderBottom: '2px solid #e2e8f0',
-                    background: 'linear-gradient(135deg, #fff 0%, #f7fafc 100%)'
+                    padding: '30px 20px', 
+                    borderBottom: '1px solid #e5e7eb',
+                    background: 'linear-gradient(135deg, #ffffff 0%, #f9fafb 100%)'
                   }}>
                     <div style={{ 
-                      fontSize: '42px', 
+                      fontSize: '32px', 
                       fontWeight: '900', 
-                      marginBottom: '12px', 
-                      letterSpacing: '2px',
-                      color: '#2d3748'
+                      marginBottom: '8px', 
+                      letterSpacing: '1px',
+                      color: '#1f2937'
                     }}>
-                      T.P<span style={{ color: '#f56500' }}>*</span>
+                      T.P<span style={{ color: '#f97316' }}>*</span>
                     </div>
                     <div style={{ 
-                      fontSize: '13px', 
+                      fontSize: '12px', 
                       fontWeight: '600', 
                       textTransform: 'uppercase', 
-                      letterSpacing: '3px',
-                      color: '#718096'
+                      letterSpacing: '2px',
+                      color: '#6b7280'
                     }}>
                       TERMINAL | PROTOCOL
                     </div>
                   </div>
                   
                   {/* Subject Section */}
-                  <div style={{ 
-                    padding: '30px 30px 25px 30px',
-                    borderBottom: '1px solid #e2e8f0',
-                    backgroundColor: '#ffffff'
-                  }}>
+                  {subject && (
                     <div style={{ 
-                      fontSize: '18px', 
-                      fontWeight: '700', 
-                      marginBottom: '8px',
-                      color: '#2d3748'
+                      padding: '25px 20px',
+                      borderBottom: '1px solid #f3f4f6',
+                      backgroundColor: '#ffffff'
                     }}>
-                      › {subject || 'SYSTEM TRANSMISSION'}
+                      <div style={{ 
+                        fontSize: '20px', 
+                        fontWeight: '700', 
+                        marginBottom: '5px',
+                        color: '#1f2937'
+                      }}>
+                        {subject}
+                      </div>
+                      <div style={{ 
+                        fontSize: '10px', 
+                        color: '#9ca3af',
+                        textTransform: 'uppercase',
+                        letterSpacing: '1px',
+                        fontWeight: '500'
+                      }}>
+                        INCOMING TRANSMISSION
+                      </div>
                     </div>
-                    <div style={{ 
-                      fontSize: '11px', 
-                      color: '#a0aec0',
-                      textTransform: 'uppercase',
-                      letterSpacing: '1px',
-                      fontWeight: '500'
-                    }}>
-                      INCOMING MESSAGE
-                    </div>
-                  </div>
+                  )}
                   
                   {/* Content Section */}
                   <div style={{ 
-                    padding: '35px 30px',
-                    minHeight: '200px',
-                    backgroundColor: '#ffffff'
+                    padding: '25px 20px',
+                    backgroundColor: '#ffffff',
+                    minHeight: '200px'
                   }}>
-                    <div style={{ 
-                      fontSize: '12px', 
-                      marginBottom: '20px',
-                      fontWeight: '600',
-                      textTransform: 'uppercase',
-                      letterSpacing: '1px',
-                      color: '#718096'
-                    }}>
-                      MESSAGE CONTENT:
-                    </div>
-                    
-                    <div style={{ 
-                      fontSize: '14px', 
-                      lineHeight: '1.7',
-                      paddingLeft: '20px',
-                      borderLeft: '3px solid #fed7aa',
-                      marginBottom: '30px',
-                      color: '#4a5568'
-                    }}>
-                      {content ? (
-                        content.split('\n').map((line, index) => (
-                          <div key={index} style={{ marginBottom: '10px' }}>
-                            › {line || '\u00A0'}
-                          </div>
-                        ))
+                    {contentMode === 'html' ? (
+                      htmlContent ? (
+                        <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
                       ) : (
-                        <div style={{ fontStyle: 'italic', color: '#a0aec0' }}>
-                          › Your transmission content will appear here...
+                        <div style={{ 
+                          fontStyle: 'italic', 
+                          color: '#9ca3af',
+                          fontSize: '14px'
+                        }}>
+                          Your HTML content will appear here...
                         </div>
-                      )}
-                    </div>
+                      )
+                    ) : (
+                      content ? (
+                        <div style={{ 
+                          fontSize: '14px', 
+                          lineHeight: '1.7',
+                          color: '#374151',
+                          whiteSpace: 'pre-wrap'
+                        }}>
+                          {content}
+                        </div>
+                      ) : (
+                        <div style={{ 
+                          fontStyle: 'italic', 
+                          color: '#9ca3af',
+                          fontSize: '14px'
+                        }}>
+                          Your message content will appear here...
+                        </div>
+                      )
+                    )}
                   </div>
                   
-                  {/* Terminal Footer */}
+                  {/* Footer */}
                   <div style={{ 
-                    padding: '25px 30px',
-                    borderTop: '2px solid #e2e8f0',
-                    background: 'linear-gradient(135deg, #fff 0%, #f7fafc 100%)',
+                    padding: '20px',
+                    borderTop: '1px solid #e5e7eb',
+                    background: 'linear-gradient(135deg, #ffffff 0%, #f9fafb 100%)',
                     textAlign: 'center'
                   }}>
                     <div style={{ 
-                      fontSize: '16px', 
-                      fontWeight: '700', 
-                      marginBottom: '15px',
-                      color: '#2d3748'
+                      fontSize: '14px', 
+                      fontWeight: '600', 
+                      marginBottom: '10px',
+                      color: '#1f2937'
                     }}>
                       — tensor boy
                     </div>
                     
                     <div style={{ 
-                      fontSize: '11px', 
-                      color: '#a0aec0',
+                      fontSize: '10px', 
+                      color: '#9ca3af',
                       textTransform: 'uppercase',
-                      letterSpacing: '2px',
-                      marginBottom: '20px',
+                      letterSpacing: '1px',
+                      marginBottom: '15px',
                       fontWeight: '500'
                     }}>
                       END TRANSMISSION
                     </div>
                     
                     <div style={{ 
-                      fontSize: '16px', 
-                      fontWeight: '600', 
+                      fontSize: '14px', 
+                      fontWeight: '500', 
                       lineHeight: '1.5',
-                      color: '#4a5568'
+                      color: '#6b7280'
                     }}>
                       Hack the system.<br />
                       Or be hacked by it.
