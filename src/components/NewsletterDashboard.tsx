@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -43,6 +42,76 @@ const NewsletterDashboard = () => {
     fetchData();
   }, []);
 
+  const generateCompleteEmailHTML = () => {
+    const emailContent = contentMode === 'html' ? htmlContent : content;
+    
+    return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin: 0; padding: 20px; font-family: 'Segoe UI', Arial, sans-serif; background-color: #f5f5f5;">
+  <div style="max-width: 600px; margin: 0 auto; font-family: 'Segoe UI', Arial, sans-serif; background-color: #ffffff; color: #333333; line-height: 1.6; padding: 0; border-radius: 12px; border: 1px solid #e5e7eb; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
+    
+    <!-- Header -->
+    <div style="text-align: center; padding: 30px 20px; border-bottom: 1px solid #e5e7eb; background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);">
+      <div style="font-size: 32px; font-weight: 900; margin-bottom: 8px; letter-spacing: 1px; color: #1f2937;">
+        T.P<span style="color: #f97316;">*</span>
+      </div>
+      <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: #6b7280;">
+        TERMINAL | PROTOCOL
+      </div>
+    </div>
+    
+    <!-- Subject Section -->
+    ${subject ? `
+    <div style="padding: 25px 20px; border-bottom: 1px solid #f3f4f6; background-color: #ffffff;">
+      <div style="font-size: 20px; font-weight: 700; margin-bottom: 5px; color: #1f2937;">
+        ${subject}
+      </div>
+      <div style="font-size: 10px; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; font-weight: 500;">
+        INCOMING TRANSMISSION
+      </div>
+    </div>
+    ` : ''}
+    
+    <!-- Content Section -->
+    <div style="padding: 25px 20px; background-color: #ffffff; min-height: 200px;">
+      ${contentMode === 'html' ? 
+        (htmlContent || '<div style="font-style: italic; color: #9ca3af; font-size: 14px;">Your HTML content will appear here...</div>') 
+        : 
+        (content ? 
+          `<div style="font-size: 14px; line-height: 1.7; color: #374151; white-space: pre-wrap;">${content}</div>` 
+          : 
+          '<div style="font-style: italic; color: #9ca3af; font-size: 14px;">Your message content will appear here...</div>'
+        )
+      }
+    </div>
+    
+    <!-- Footer -->
+    <div style="padding: 20px; border-top: 1px solid #e5e7eb; background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%); text-align: center;">
+      <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px; color: #1f2937;">
+        — tensor boy
+      </div>
+      
+      <div style="font-size: 10px; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; font-weight: 500;">
+        END TRANSMISSION
+      </div>
+      
+      <div style="font-size: 14px; font-weight: 500; line-height: 1.5; color: #6b7280;">
+        Hack the system.<br />
+        Or be hacked by it.
+      </div>
+    </div>
+    
+  </div>
+</body>
+</html>`;
+  };
+
   const handleTestSend = async () => {
     const emailContent = contentMode === 'html' ? htmlContent : content;
     if (!subject.trim() || !emailContent.trim()) {
@@ -83,7 +152,8 @@ const NewsletterDashboard = () => {
     setIsSending(true);
 
     try {
-      await sendEmail(subject, emailContent);
+      const completeEmailHTML = generateCompleteEmailHTML();
+      await sendEmail(subject, completeEmailHTML);
       toast({
         title: "TRANSMISSION SUCCESSFUL",
         description: "Newsletter deployed to all active subscribers.",
@@ -100,10 +170,6 @@ const NewsletterDashboard = () => {
       });
     } finally {
       setIsSending(false);
-      toast({
-        title: "TRANSMISSION SUCCESSFUL",
-        description: "Newsletter deployed to all active subscribers.",
-      });
     }
   };
 
