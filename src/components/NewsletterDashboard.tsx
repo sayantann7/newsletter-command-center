@@ -450,7 +450,7 @@ const NewsletterDashboard = () => {
                       letterSpacing: '2px',
                       color: '#6b7280'
                     }}>
-                      TERMINAL | PROTOCOL
+                      TENSOR | PROTOCOL
                     </div>
                   </div>
                   
