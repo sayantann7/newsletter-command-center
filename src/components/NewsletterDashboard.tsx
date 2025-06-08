@@ -244,85 +244,141 @@ const NewsletterDashboard = () => {
               <CardHeader>
                 <CardTitle className="font-cyber text-neon-orange flex items-center gap-2">
                   <Eye className="h-5 w-5" />
-                  TRANSMISSION PREVIEW
+                  NEWSLETTER PREVIEW
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {/* Email Preview with exact styling from the template */}
+                {/* Email Preview with AlphaSignal styling */}
                 <div style={{ 
                   maxWidth: '600px', 
                   margin: '0 auto', 
-                  padding: '40px', 
-                  backgroundColor: '#ffffff',
-                  fontFamily: "'Courier New', monospace",
-                  color: '#b8460e',
-                  lineHeight: '1.6'
+                  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                  backgroundColor: '#f5f5f5',
+                  color: '#333',
+                  lineHeight: '1.6',
+                  padding: '20px',
+                  borderRadius: '8px'
                 }}>
-                  {/* Header */}
-                  <div style={{ marginBottom: '30px' }}>
+                  <div style={{ maxWidth: '600px', margin: '0 auto', backgroundColor: '#ffffff', borderRadius: '8px', overflow: 'hidden' }}>
+                    
+                    {/* Header */}
                     <div style={{ 
-                      fontSize: '72px', 
-                      fontWeight: '900', 
-                      color: '#b8460e', 
-                      marginBottom: '5px', 
-                      letterSpacing: '2px' 
+                      textAlign: 'right', 
+                      padding: '15px 20px', 
+                      fontSize: '12px', 
+                      color: '#666', 
+                      borderBottom: '1px solid #e0e0e0' 
                     }}>
-                      T.P<span style={{ color: '#b8460e' }}>*</span>
+                      Signup | Work With Us | Follow on X | Read on Web
                     </div>
+                    
+                    {/* Hero Section */}
                     <div style={{ 
-                      fontSize: '18px', 
-                      fontWeight: 'bold', 
-                      color: '#b8460e', 
-                      textTransform: 'uppercase', 
-                      letterSpacing: '3px', 
-                      marginBottom: '30px' 
+                      background: 'linear-gradient(135deg, #4f7df3 0%, #3b5bdb 100%)', 
+                      color: 'white', 
+                      padding: '40px 30px', 
+                      borderRadius: '15px', 
+                      margin: '20px' 
                     }}>
-                      TERMINAL | PROTOCOL
-                    </div>
-                  </div>
-                  
-                  {/* Top separator */}
-                  <div style={{ height: '2px', backgroundColor: '#b8460e', margin: '30px 0' }}></div>
-                  
-                  {/* Content */}
-                  <div style={{ fontSize: '16px', color: '#b8460e', fontWeight: 'bold' }}>
-                    {content ? (
-                      content.split('\n').map((line, index) => (
-                        <div key={index} style={{ marginBottom: '20px' }}>
-                          {line || '\u00A0'}
-                        </div>
-                      ))
-                    ) : (
-                      <div style={{ fontStyle: 'italic', color: '#b8460e' }}>
-                        [CONTENT PREVIEW WILL APPEAR HERE]
+                      <div style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '20px' }}>
+                        <span style={{ 
+                          backgroundColor: 'rgba(255,255,255,0.2)', 
+                          padding: '8px 12px', 
+                          borderRadius: '8px', 
+                          display: 'inline-block' 
+                        }}>A</span>
                       </div>
-                    )}
-                  </div>
-                  
-                  {/* Signature */}
-                  <div style={{ 
-                    marginTop: '40px', 
-                    fontWeight: 'bold', 
-                    fontSize: '16px', 
-                    color: '#b8460e' 
-                  }}>
-                    — tensor boy
-                  </div>
-                  
-                  {/* Bottom separator */}
-                  <div style={{ height: '2px', backgroundColor: '#b8460e', margin: '30px 0' }}></div>
-                  
-                  {/* Footer message */}
-                  <div style={{ marginTop: '50px', textAlign: 'left' }}>
-                    <div style={{ 
-                      fontSize: '23px', 
-                      fontWeight: 'bold', 
-                      color: '#b8460e', 
-                      lineHeight: '1.4' 
-                    }}>
-                      Hack the system.<br />
-                      Or be hacked by it.
+                      <div style={{ fontSize: '24px', fontWeight: '600', marginBottom: '20px' }}>
+                        Hey Reader,
+                      </div>
+                      <div style={{ fontSize: '16px', marginBottom: '20px', opacity: '0.95' }}>
+                        {subject || 'Welcome to AlphaSignal – the most read newsletter by AI developers.'}
+                      </div>
+                      <div style={{ fontSize: '16px', opacity: '0.95' }}>
+                        We bring you the top 1% of news, papers, models, and repos, all summarized to keep you updated on the latest in AI.
+                      </div>
                     </div>
+                    
+                    {/* Today's Signal Section */}
+                    <div style={{ 
+                      margin: '20px', 
+                      border: '1px solid #e0e0e0', 
+                      borderRadius: '10px', 
+                      padding: '0', 
+                      overflow: 'hidden' 
+                    }}>
+                      <div style={{ 
+                        backgroundColor: '#f8f9fa', 
+                        padding: '15px 20px', 
+                        borderBottom: '1px solid #e0e0e0' 
+                      }}>
+                        <div style={{ 
+                          color: '#4f7df3', 
+                          fontWeight: '600', 
+                          fontSize: '14px', 
+                          textTransform: 'uppercase', 
+                          letterSpacing: '0.5px' 
+                        }}>IN TODAY'S SIGNAL</div>
+                      </div>
+                      <div style={{ padding: '20px' }}>
+                        <div style={{ fontSize: '13px', color: '#666', marginBottom: '25px' }}>
+                          Read time: 4 min 18 sec
+                        </div>
+                        
+                        {/* Content */}
+                        <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '15px', color: '#333' }}>
+                          📰 Today's Content
+                        </div>
+                        <div style={{ fontSize: '14px', color: '#333', marginBottom: '20px' }}>
+                          {content ? (
+                            content.split('\n').map((line, index) => (
+                              <div key={index} style={{ marginBottom: '10px' }}>
+                                {line || '\u00A0'}
+                              </div>
+                            ))
+                          ) : (
+                            <div style={{ fontStyle: 'italic', color: '#666' }}>
+                              › Your newsletter content will appear here...
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Forward Message */}
+                    <div style={{ 
+                      margin: '20px', 
+                      border: '1px solid #e0e0e0', 
+                      borderRadius: '10px', 
+                      padding: '20px', 
+                      textAlign: 'center' 
+                    }}>
+                      <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '5px' }}>
+                        If you're enjoying this newsletter please forward this email to a colleague.
+                      </div>
+                      <div style={{ fontSize: '14px', color: '#666' }}>
+                        It helps us keep this content free.
+                      </div>
+                    </div>
+                    
+                    {/* Feedback Section */}
+                    <div style={{ 
+                      margin: '20px', 
+                      border: '1px solid #e0e0e0', 
+                      borderRadius: '10px', 
+                      padding: '30px', 
+                      textAlign: 'center' 
+                    }}>
+                      <div style={{ fontSize: '18px', fontWeight: '600', marginBottom: '20px', color: '#333' }}>
+                        How was today's email?
+                      </div>
+                      <div>
+                        <span style={{ color: '#4f7df3', margin: '0 15px', fontSize: '16px', fontWeight: '500' }}>Awesome</span>
+                        <span style={{ color: '#4f7df3', margin: '0 15px', fontSize: '16px', fontWeight: '500' }}>Decent</span>
+                        <span style={{ color: '#4f7df3', margin: '0 15px', fontSize: '16px', fontWeight: '500' }}>Not Great</span>
+                      </div>
+                    </div>
+                    
                   </div>
                 </div>
               </CardContent>
