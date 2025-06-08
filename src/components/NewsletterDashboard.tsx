@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Send, Eye, Users, Mail, LogOut, Code, Type, Image } from 'lucide-react';
+import { Send, Eye, Users, Mail, LogOut, Code, Type, Image, FileCode } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getTotalEmailsSent, getTotalSubscribers, sendEmail, sendTestEmail } from '@/lib/utils';
 
@@ -14,7 +14,8 @@ const NewsletterDashboard = () => {
   const [subject, setSubject] = useState('');
   const [content, setContent] = useState('');
   const [htmlContent, setHtmlContent] = useState('');
-  const [contentMode, setContentMode] = useState<'text' | 'html'>('text');
+  const [rawHtmlContent, setRawHtmlContent] = useState('');
+  const [contentMode, setContentMode] = useState<'text' | 'html' | 'raw-html'>('text');
   const [isPreview, setIsPreview] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [totalSubscribers, setTotalSubscribers] = useState(0);
@@ -43,6 +44,11 @@ const NewsletterDashboard = () => {
   }, []);
 
   const generateCompleteEmailHTML = () => {
+    // For raw HTML mode, return the content directly without any wrapper
+    if (contentMode === 'raw-html') {
+      return rawHtmlContent;
+    }
+    
     const emailContent = contentMode === 'html' ? htmlContent : content;
     
     return `
@@ -114,14 +120,26 @@ const NewsletterDashboard = () => {
 
   const handleTestSend = async () => {
     const completeEmailHTML = generateCompleteEmailHTML();
-    if (!subject.trim() || !completeEmailHTML.trim()) {
+    
+    // For raw HTML mode, only check if the raw HTML content is not empty
+    const isContentEmpty = contentMode === 'raw-html' 
+      ? !rawHtmlContent.trim() 
+      : !completeEmailHTML.trim();
+      
+    // Subject is not required for raw HTML as it might be included in the HTML
+    const isSubjectRequired = contentMode !== 'raw-html';
+    
+    if ((isSubjectRequired && !subject.trim()) || isContentEmpty) {
       toast({
         title: "ACCESS DENIED",
-        description: "Subject and content are required to proceed.",
+        description: contentMode === 'raw-html' 
+          ? "Content is required to proceed." 
+          : "Subject and content are required to proceed.",
         variant: "destructive",
       });
       return;
     }
+    
     try {
       await sendTestEmail(subject, completeEmailHTML);
       toast({
@@ -139,11 +157,25 @@ const NewsletterDashboard = () => {
   }
 
   const handleSend = async () => {
-    const emailContent = contentMode === 'html' ? htmlContent : content;
-    if (!subject.trim() || !emailContent.trim()) {
+    // Get the appropriate content based on the mode
+    const emailContent = contentMode === 'html' 
+      ? htmlContent 
+      : contentMode === 'raw-html' 
+        ? rawHtmlContent 
+        : content;
+    
+    // For raw HTML mode, only check if the raw HTML content is not empty
+    const isContentEmpty = !emailContent.trim();
+    
+    // Subject is not required for raw HTML as it might be included in the HTML
+    const isSubjectRequired = contentMode !== 'raw-html';
+    
+    if ((isSubjectRequired && !subject.trim()) || isContentEmpty) {
       toast({
         title: "ACCESS DENIED",
-        description: "Subject and content are required to proceed.",
+        description: contentMode === 'raw-html' 
+          ? "Content is required to proceed." 
+          : "Subject and content are required to proceed.",
         variant: "destructive",
       });
       return;
@@ -161,6 +193,7 @@ const NewsletterDashboard = () => {
       setSubject('');
       setContent('');
       setHtmlContent('');
+      setRawHtmlContent('');
     } catch (error) {
       console.error("Error sending email:", error);
       toast({
@@ -200,6 +233,7 @@ const NewsletterDashboard = () => {
   };
 
   const getCurrentContent = () => {
+    if (contentMode === 'raw-html') return rawHtmlContent;
     return contentMode === 'html' ? htmlContent : content;
   };
 
@@ -277,6 +311,7 @@ const NewsletterDashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
+                {/* Subject input - shown for all modes now */}
                 <div className="space-y-2">
                   <label className="text-sm font-mono text-muted-foreground">SUBJECT LINE</label>
                   <Input
@@ -290,7 +325,7 @@ const NewsletterDashboard = () => {
                 {/* Content Mode Toggle */}
                 <div className="flex items-center gap-4">
                   <label className="text-sm font-mono text-muted-foreground">CONTENT MODE</label>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     <Button
                       variant={contentMode === 'text' ? 'default' : 'outline'}
                       size="sm"
@@ -309,10 +344,19 @@ const NewsletterDashboard = () => {
                       <Code className="h-4 w-4 mr-2" />
                       HTML
                     </Button>
+                    <Button
+                      variant={contentMode === 'raw-html' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setContentMode('raw-html')}
+                      className="font-mono"
+                    >
+                      <FileCode className="h-4 w-4 mr-2" />
+                      RAW HTML
+                    </Button>
                   </div>
                 </div>
 
-                {/* HTML Tools */}
+                {/* HTML Tools - only show for HTML mode, not raw HTML */}
                 {contentMode === 'html' && (
                   <div className="space-y-2">
                     <label className="text-sm font-mono text-muted-foreground">QUICK TOOLS</label>
@@ -340,7 +384,9 @@ const NewsletterDashboard = () => {
 
                 <div className="space-y-2">
                   <label className="text-sm font-mono text-muted-foreground">
-                    {contentMode === 'html' ? 'HTML CONTENT' : 'MESSAGE CONTENT'}
+                    {contentMode === 'text' ? 'MESSAGE CONTENT' : 
+                     contentMode === 'html' ? 'HTML CONTENT' : 
+                     'COMPLETE HTML DOCUMENT'}
                   </label>
                   {contentMode === 'text' ? (
                     <Textarea
@@ -349,7 +395,7 @@ const NewsletterDashboard = () => {
                       placeholder="Compose your message for the network..."
                       className="min-h-[300px] font-mono bg-input border-border focus:border-neon-orange transition-colors resize-none"
                     />
-                  ) : (
+                  ) : contentMode === 'html' ? (
                     <Textarea
                       value={htmlContent}
                       onChange={(e) => setHtmlContent(e.target.value)}
@@ -361,6 +407,26 @@ const NewsletterDashboard = () => {
   <img src="https://your-image-url.com" style="width: 100%; border-radius: 8px;" />
 </div>`}
                       className="min-h-[400px] font-mono bg-input border-border focus:border-neon-orange transition-colors resize-none text-xs"
+                    />
+                  ) : (
+                    <Textarea
+                      value={rawHtmlContent}
+                      onChange={(e) => setRawHtmlContent(e.target.value)}
+                      placeholder={`Enter complete HTML document:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Newsletter Title</title>
+</head>
+<body>
+  <h1>Your Content</h1>
+  <p>This will be sent exactly as entered, without any additional styling or formatting.</p>
+</body>
+</html>`}
+                      className="min-h-[500px] font-mono bg-input border-border focus:border-neon-orange transition-colors resize-none text-xs"
                     />
                   )}
                 </div>
@@ -391,7 +457,7 @@ const NewsletterDashboard = () => {
                     </Button>
                     <Button
                       onClick={handleSend}
-                      disabled={isSending || !subject.trim() || !getCurrentContent().trim()}
+                      disabled={isSending || (contentMode !== 'raw-html' && !subject.trim()) || !getCurrentContent().trim()}
                       className="font-mono bg-neon-orange hover:bg-neon-orange/80 text-black transition-colors terminal-glow"
                     >
                       <Send className="h-4 w-4 mr-2" />
@@ -412,154 +478,171 @@ const NewsletterDashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {/* Email Preview */}
-                <div style={{ 
-                  maxWidth: '600px', 
-                  margin: '0 auto', 
-                  fontFamily: "'Segoe UI', Arial, sans-serif",
-                  backgroundColor: '#ffffff',
-                  color: '#333333',
-                  lineHeight: '1.6',
-                  padding: '0',
-                  borderRadius: '12px',
-                  border: '1px solid #e5e7eb',
-                  overflow: 'hidden',
-                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)'
-                }}>
-                  
-                  {/* Header */}
-                  <div style={{ 
-                    textAlign: 'center', 
-                    padding: '30px 20px', 
-                    borderBottom: '1px solid #e5e7eb',
-                    background: 'linear-gradient(135deg, #ffffff 0%, #f9fafb 100%)'
-                  }}>
-                    <div style={{ 
-                      fontSize: '32px', 
-                      fontWeight: '900', 
-                      marginBottom: '8px', 
-                      letterSpacing: '1px',
-                      color: '#1f2937'
-                    }}>
-                      T.P<span style={{ color: '#f97316' }}>*</span>
+                {contentMode === 'raw-html' ? (
+                  /* Raw HTML Preview - render in an iframe or directly */
+                  <div className="border border-border rounded-md overflow-hidden">
+                    <div className="bg-secondary p-2 text-xs font-mono text-muted-foreground">
+                      RAW HTML PREVIEW
                     </div>
-                    <div style={{ 
-                      fontSize: '12px', 
-                      fontWeight: '600', 
-                      textTransform: 'uppercase', 
-                      letterSpacing: '2px',
-                      color: '#6b7280'
-                    }}>
-                      TENSOR | PROTOCOL
+                    <div className="bg-white p-4">
+                      {rawHtmlContent ? (
+                        <div dangerouslySetInnerHTML={{ __html: rawHtmlContent }} />
+                      ) : (
+                        <div className="italic text-muted-foreground text-sm">
+                          Your raw HTML content will appear here...
+                        </div>
+                      )}
                     </div>
                   </div>
-                  
-                  {/* Subject Section */}
-                  {subject && (
+                ) : (
+                  /* Regular Email Preview */
+                  <div style={{ 
+                    maxWidth: '600px', 
+                    margin: '0 auto', 
+                    fontFamily: "'Segoe UI', Arial, sans-serif",
+                    backgroundColor: '#ffffff',
+                    color: '#333333',
+                    lineHeight: '1.6',
+                    padding: '0',
+                    borderRadius: '12px',
+                    border: '1px solid #e5e7eb',
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)'
+                  }}>
+                    
+                    {/* Header */}
                     <div style={{ 
-                      padding: '25px 20px',
-                      borderBottom: '1px solid #f3f4f6',
-                      backgroundColor: '#ffffff'
+                      textAlign: 'center', 
+                      padding: '30px 20px', 
+                      borderBottom: '1px solid #e5e7eb',
+                      background: 'linear-gradient(135deg, #ffffff 0%, #f9fafb 100%)'
                     }}>
                       <div style={{ 
-                        fontSize: '20px', 
-                        fontWeight: '700', 
-                        marginBottom: '5px',
+                        fontSize: '32px', 
+                        fontWeight: '900', 
+                        marginBottom: '8px', 
+                        letterSpacing: '1px',
                         color: '#1f2937'
                       }}>
-                        {subject}
+                        T.P<span style={{ color: '#f97316' }}>*</span>
                       </div>
+                      <div style={{ 
+                        fontSize: '12px', 
+                        fontWeight: '600', 
+                        textTransform: 'uppercase', 
+                        letterSpacing: '2px',
+                        color: '#6b7280'
+                      }}>
+                        TENSOR | PROTOCOL
+                      </div>
+                    </div>
+                    
+                    {/* Subject Section */}
+                    {subject && (
+                      <div style={{ 
+                        padding: '25px 20px',
+                        borderBottom: '1px solid #f3f4f6',
+                        backgroundColor: '#ffffff'
+                      }}>
+                        <div style={{ 
+                          fontSize: '20px', 
+                          fontWeight: '700', 
+                          marginBottom: '5px',
+                          color: '#1f2937'
+                        }}>
+                          {subject}
+                        </div>
+                        <div style={{ 
+                          fontSize: '10px', 
+                          color: '#9ca3af',
+                          textTransform: 'uppercase',
+                          letterSpacing: '1px',
+                          fontWeight: '500'
+                        }}>
+                          INCOMING TRANSMISSION
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Content Section */}
+                    <div style={{ 
+                      padding: '25px 20px',
+                      backgroundColor: '#ffffff',
+                      minHeight: '200px'
+                    }}>
+                      {contentMode === 'html' ? (
+                        htmlContent ? (
+                          <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+                        ) : (
+                          <div style={{ 
+                            fontStyle: 'italic', 
+                            color: '#9ca3af',
+                            fontSize: '14px'
+                          }}>
+                            Your HTML content will appear here...
+                          </div>
+                        )
+                      ) : (
+                        content ? (
+                          <div style={{ 
+                            fontSize: '14px', 
+                            lineHeight: '1.7',
+                            color: '#374151',
+                            whiteSpace: 'pre-wrap'
+                          }}>
+                            {content}
+                          </div>
+                        ) : (
+                          <div style={{ 
+                            fontStyle: 'italic', 
+                            color: '#9ca3af',
+                            fontSize: '14px'
+                          }}>
+                            Your message content will appear here...
+                          </div>
+                        )
+                      )}
+                    </div>
+                    
+                    {/* Footer */}
+                    <div style={{ 
+                      padding: '20px',
+                      borderTop: '1px solid #e5e7eb',
+                      background: 'linear-gradient(135deg, #ffffff 0%, #f9fafb 100%)',
+                      textAlign: 'center'
+                    }}>
+                      <div style={{ 
+                        fontSize: '14px', 
+                        fontWeight: '600', 
+                        marginBottom: '10px',
+                        color: '#1f2937'
+                      }}>
+                        — tensor boy
+                      </div>
+                      
                       <div style={{ 
                         fontSize: '10px', 
                         color: '#9ca3af',
                         textTransform: 'uppercase',
                         letterSpacing: '1px',
+                        marginBottom: '15px',
                         fontWeight: '500'
                       }}>
-                        INCOMING TRANSMISSION
+                        END TRANSMISSION
+                      </div>
+                      
+                      <div style={{ 
+                        fontSize: '14px', 
+                        fontWeight: '500', 
+                        lineHeight: '1.5',
+                        color: '#6b7280'
+                      }}>
+                        Hack the system.<br />
+                        Or be hacked by it.
                       </div>
                     </div>
-                  )}
-                  
-                  {/* Content Section */}
-                  <div style={{ 
-                    padding: '25px 20px',
-                    backgroundColor: '#ffffff',
-                    minHeight: '200px'
-                  }}>
-                    {contentMode === 'html' ? (
-                      htmlContent ? (
-                        <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
-                      ) : (
-                        <div style={{ 
-                          fontStyle: 'italic', 
-                          color: '#9ca3af',
-                          fontSize: '14px'
-                        }}>
-                          Your HTML content will appear here...
-                        </div>
-                      )
-                    ) : (
-                      content ? (
-                        <div style={{ 
-                          fontSize: '14px', 
-                          lineHeight: '1.7',
-                          color: '#374151',
-                          whiteSpace: 'pre-wrap'
-                        }}>
-                          {content}
-                        </div>
-                      ) : (
-                        <div style={{ 
-                          fontStyle: 'italic', 
-                          color: '#9ca3af',
-                          fontSize: '14px'
-                        }}>
-                          Your message content will appear here...
-                        </div>
-                      )
-                    )}
                   </div>
-                  
-                  {/* Footer */}
-                  <div style={{ 
-                    padding: '20px',
-                    borderTop: '1px solid #e5e7eb',
-                    background: 'linear-gradient(135deg, #ffffff 0%, #f9fafb 100%)',
-                    textAlign: 'center'
-                  }}>
-                    <div style={{ 
-                      fontSize: '14px', 
-                      fontWeight: '600', 
-                      marginBottom: '10px',
-                      color: '#1f2937'
-                    }}>
-                      — tensor boy
-                    </div>
-                    
-                    <div style={{ 
-                      fontSize: '10px', 
-                      color: '#9ca3af',
-                      textTransform: 'uppercase',
-                      letterSpacing: '1px',
-                      marginBottom: '15px',
-                      fontWeight: '500'
-                    }}>
-                      END TRANSMISSION
-                    </div>
-                    
-                    <div style={{ 
-                      fontSize: '14px', 
-                      fontWeight: '500', 
-                      lineHeight: '1.5',
-                      color: '#6b7280'
-                    }}>
-                      Hack the system.<br />
-                      Or be hacked by it.
-                    </div>
-                  </div>
-                  
-                </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
