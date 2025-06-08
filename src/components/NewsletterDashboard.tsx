@@ -62,7 +62,7 @@ const NewsletterDashboard = () => {
         T.P<span style="color: #f97316;">*</span>
       </div>
       <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: #6b7280;">
-        TERMINAL | PROTOCOL
+        TENSOR | PROTOCOL
       </div>
     </div>
     
