@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Send, Eye, Users, Mail, LogOut } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { getTotalEmailsSent, getTotalSubscribers, sendEmail } from '@/lib/utils';
+import { getTotalEmailsSent, getTotalSubscribers, sendEmail, sendTestEmail } from '@/lib/utils';
 
 const NewsletterDashboard = () => {
   const [subject, setSubject] = useState('');
@@ -40,6 +40,31 @@ const NewsletterDashboard = () => {
 
     fetchData();
   }, []);
+
+  const handleTestSend = async () => {
+    if (!subject.trim() || !content.trim()) {
+      toast({
+        title: "ACCESS DENIED",
+        description: "Subject and content are required to proceed.",
+        variant: "destructive",
+      });
+      return;
+    }
+    try {
+      await sendTestEmail(subject, content);
+      toast({
+        title: "TEST TRANSMISSION SUCCESSFUL",
+        description: "Test email sent successfully.",
+      });
+    } catch (error) {
+      console.error("Error sending test email:", error);
+      toast({
+        title: "TEST TRANSMISSION FAILED",
+        description: "There was an error sending the test email.",
+        variant: "destructive",
+      });
+    }
+  }
 
   const handleSend = async () => {
     if (!subject.trim() || !content.trim()) {
@@ -192,6 +217,14 @@ const NewsletterDashboard = () => {
                   </div>
                   
                   <div className="flex gap-3">
+                    <Button
+                      variant="outline"
+                      onClick={() => handleTestSend()}
+                      className="font-mono border-muted hover:border-neon-orange transition-colors"
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      TEST
+                    </Button>
                     <Button
                       onClick={handleSend}
                       disabled={isSending || !subject.trim() || !content.trim()}
