@@ -34,11 +34,11 @@ export const sendEmail = async (subject: string, body: string) => {
   return response.data;
 }
 
-export const sendTestEmail = async (subject: string, body: string) => {
+export const sendTestEmail = async (subject: string, content: string) => {
   const response = await api.post("/send-test-email", {
     userId: localStorage.getItem("userId"),
     subject,
-    body,
+    content,
   });
   return response.data;
 }

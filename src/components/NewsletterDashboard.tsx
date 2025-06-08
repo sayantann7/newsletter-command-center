@@ -113,8 +113,8 @@ const NewsletterDashboard = () => {
   };
 
   const handleTestSend = async () => {
-    const emailContent = contentMode === 'html' ? htmlContent : content;
-    if (!subject.trim() || !emailContent.trim()) {
+    const completeEmailHTML = generateCompleteEmailHTML();
+    if (!subject.trim() || !completeEmailHTML.trim()) {
       toast({
         title: "ACCESS DENIED",
         description: "Subject and content are required to proceed.",
@@ -123,7 +123,7 @@ const NewsletterDashboard = () => {
       return;
     }
     try {
-      await sendTestEmail(subject, emailContent);
+      await sendTestEmail(subject, completeEmailHTML);
       toast({
         title: "TEST TRANSMISSION SUCCESSFUL",
         description: "Test email sent successfully.",
