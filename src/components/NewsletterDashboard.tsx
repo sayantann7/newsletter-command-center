@@ -242,31 +242,16 @@ const NewsletterDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-darker-bg p-6">
+    <div className="min-h-screen bg-darker-bg p-6 pt-4">
       <div className="max-w-6xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-cyber font-bold text-neon-orange terminal-text">
-              T.P*
-            </h1>
-            <p className="text-lg font-cyber text-muted-foreground mt-2">
-              NEWSLETTER CONTROL PROTOCOL
-            </p>
-          </div>
-          <div className="flex items-center gap-4">
-            <Badge variant="outline" className="border-neon-orange text-neon-orange animate-glow-pulse">
-              ONLINE
-            </Badge>
-            <Button 
-              variant="outline" 
-              onClick={handleLogout}
-              className="font-mono border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              LOGOUT
-            </Button>
-          </div>
+        {/* Page Title - simplified since we have a navbar now */}
+        <div>
+          <h1 className="text-3xl font-cyber font-bold text-neon-orange terminal-text">
+            NEWSLETTER CONTROL PROTOCOL
+          </h1>
+          <p className="text-sm font-mono text-muted-foreground mt-1">
+            MANAGE AND DEPLOY NETWORK COMMUNICATIONS
+          </p>
         </div>
 
         {/* Stats Grid */}

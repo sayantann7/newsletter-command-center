@@ -42,3 +42,23 @@ export const sendTestEmail = async (subject: string, content: string) => {
   });
   return response.data;
 }
+
+export const getAllWallpapers = async () => {
+  const response = await api.get("/get-wallpapers");
+  // Transform the response to include the isApproved field
+  const wallpapers = response.data.wallpapers.map(wallpaper => ({
+    ...wallpaper,
+    // Rename imageUrl to match backend if needed
+    imageUrl: wallpaper.imageUrl || wallpaper.url || "",
+    // Add isApproved field if missing from API response
+    isApproved: Boolean(wallpaper.isApproved)
+  }));
+  return wallpapers;
+}
+
+export const approveWallpaper = async (id: string) => {
+  const response = await api.post("/approve-wallpaper", {
+    id
+  });
+  return response.data;
+}
